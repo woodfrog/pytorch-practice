@@ -81,8 +81,8 @@ class ResidualBlock(torch.nn.Module):
         self.in2 = torch.nn.InstanceNorm2d(channels, affine=True)
 
     def forward(self, x):
-        out = self.relu(self.bn1(self.conv1(x)))
-        out = self.bn2(self.conv2(out))
+        out = self.relu(self.in1(self.conv1(x)))
+        out = self.in2(self.conv2(out))
         out += x
         return out
 

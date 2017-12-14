@@ -17,6 +17,7 @@ class VGG16(torch.nn.Module):
             self.extractors.append(extractor)
 
         if not requires_grad:
+            print(len(list(self.parameters())))
             for para in self.parameters():
                 para.require_grad = False
 
@@ -24,6 +25,7 @@ class VGG16(torch.nn.Module):
         extracted_features = []
         h = X
         for extractor in self.extractors:
+            extractor.cuda()  # the outside cuda() doesn't work? have to put one extra here?
             h = extractor(h)
             extracted_features.append(h)
         return extracted_features

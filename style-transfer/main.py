@@ -14,6 +14,8 @@ from torchvision import transforms
 from models.transfom_net import TransformNet
 from models.pretrained_vgg import VGG16
 
+import utils
+
 
 def check_model_paths(args):
     try:
@@ -224,11 +226,11 @@ def main():
         sys.exit(1)
 
     if args.subcommand == "train":
-        check_paths(args)
+        check_model_paths(args)
         train(args)
     else:
         stylize(args)
-        
+
 
 if __name__ == '__main__':
     main()
