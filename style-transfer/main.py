@@ -11,8 +11,8 @@ from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision import transforms
 
-from transfom_net import TransformNet
-from pretrained_vgg import VGG16
+from models.transfom_net import TransformNet
+from models.pretrained_vgg import VGG16
 
 
 def check_model_paths(args):
@@ -80,18 +80,20 @@ def train(args):
             if args.cuda:
                 x = x.cuda()
 
-            y = transform_net(x)
+            output = transform_net(x)
 
-            y = utils.normalize_batch(y)
+            # since we use Imagenet pre-trained vgg, we should normalize the images
+            # using the mean of Imagenet
+            output = utils.normalize_batch(output)
             x = utils.normalize_batch(x)
 
-            features_y = vgg(y)  # a list of len 4, extracted from 4 different layers
+            features_output = vgg(output)  # a list of len 4, extracted from 4 different layers
             features_x = vgg(x)  # a list of len 4
 
-            content_loss = args.content_weight * mse_loss(features_y[2], features_x[2])
+            content_loss = args.content_weight * mse_loss(features_output[2], features_x[2])
 
             style_loss = 0.
-            for ft_y, gm_s in zip(features_y, gram_style):  # run over each layer
+            for ft_y, gm_s in zip(features_output, gram_style):  # run over each layer
                 gm_y = utils.gram_matrix(ft_y)
                 style_loss += mse_loss(gm_y, gm_s[:n_batch, :, :])
             style_loss *= args.style_weight
