@@ -1,5 +1,5 @@
 import torch
-from PIL import image
+from PIL import Image
 from torch.autograd import Variable
 
 

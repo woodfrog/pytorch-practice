@@ -67,7 +67,7 @@ def train(args):
     style_v = Variable(style)
     style_v = utils.normalize_batch(style_v)
     features_style = vgg(style_v)
-    gram_style = [utils.gram_matrix(y) for y in features_style]
+    gram_style = [utils.gram_matrix(y) for y in features_style]  # prevent repeated computing
 
     for e in range(args.epochs):
         transform_net.train()  # turn on train mode
@@ -89,14 +89,18 @@ def train(args):
             output = utils.normalize_batch(output)
             x = utils.normalize_batch(x)
 
-            features_output = vgg(output)  # a list of len 4, extracted from 4 different layers
-            features_x = vgg(x)  # a list of len 4
+            # content loss
+            features_output = vgg(output)  # a tuple of len 4, extracted from 4 different layers
+            features_x = vgg(x)  # a tuple of len 4
 
+            for idx in range(len(features_x)):
+                features_x[idx] = features_x[idx].detach()
             content_loss = args.content_weight * mse_loss(features_output[2], features_x[2])
 
             style_loss = 0.
             for ft_y, gm_s in zip(features_output, gram_style):  # run over each layer
                 gm_y = utils.gram_matrix(ft_y)
+                gm_s = gm_s.detach()
                 style_loss += mse_loss(gm_y, gm_s[:n_batch, :, :])
             style_loss *= args.style_weight
 
