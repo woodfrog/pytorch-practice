@@ -46,6 +46,11 @@ def train(args):
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size)
 
     transform_net = TransformNet()
+    if args.pretrained_weight is not None:  # load pre-trained-weight
+        transform_net.load_state_dict(torch.load(args.pretrained_weight))
+        print('load weight for transfrom net from {}'.format(args.pretrained_weight))
+
+
     optimizer = Adam(transform_net.parameters(), args.lr)
     mse_loss = torch.nn.MSELoss()
 
@@ -169,13 +174,13 @@ def stylize(args):
     utils.save_image(args.output_image, output_data)
 
 
-def main():
+if __name__ == '__main__':
     main_arg_parser = argparse.ArgumentParser(description="parser for fast neural style transform")
     subparsers = main_arg_parser.add_subparsers(title="subcommands", dest="subcommand")
 
     # The parser for training
     train_arg_parser = subparsers.add_parser("train", help="parser for training arguments")
-    train_arg_parser.add_argument("--epochs", type=int, default=2,
+    train_arg_parser.add_argument("--epochs", type=int, default=5,
                                   help="number of training epochs, default is 2")
     train_arg_parser.add_argument("--batch-size", type=int, default=4,
                                   help="batch size for training, default is 4")
@@ -200,12 +205,15 @@ def main():
                                   help="weight for content-loss, default is 1e5")
     train_arg_parser.add_argument("--style-weight", type=float, default=1e10,
                                   help="weight for style-loss, default is 1e10")
-    train_arg_parser.add_argument("--lr", type=float, default=1e-3,
+    train_arg_parser.add_argument("--lr", type=float, default=1e-4,
                                   help="learning rate, default is 1e-3")
-    train_arg_parser.add_argument("--log-interval", type=int, default=500,
-                                  help="number of images after which the training loss is logged, default is 500")
-    train_arg_parser.add_argument("--checkpoint-interval", type=int, default=2000,
+    train_arg_parser.add_argument("--log-interval", type=int, default=50,
+                                  help="number of batches after which the training loss is logged, default is 50")
+    train_arg_parser.add_argument("--checkpoint-interval", type=int, default=5000,
                                   help="number of batches after which a checkpoint of the trained model will be created")
+    train_arg_parser.add_argument("--pretrained-weight", type=str, default=None,
+                                  help="the path to the pre-trained weight of the transform net")
+
 
     # The parser for inference
     eval_arg_parser = subparsers.add_parser("eval", help="parser for evaluation/stylizing arguments")
@@ -235,6 +243,3 @@ def main():
     else:
         stylize(args)
 
-
-if __name__ == '__main__':
-    main()

@@ -1,0 +1,1 @@
+python main.py eval --content-image images/content-images/amber.jpg --model /local-scratch/cjc/pytorch-practice/style-transfer/weights/epoch_2_Sat_Dec_16_16:00:14_2017_100000.0_10000000000.0.model --output-image images/output-images/stylized.jpg --cuda 1
