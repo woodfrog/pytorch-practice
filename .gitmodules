@@ -1,0 +1,4 @@
+[submodule "neural-style-transfer"]
+	path = neural-style-transfer
+	url = git@github.com:woodfrog/neural-style-transfer.git
+	branch = master

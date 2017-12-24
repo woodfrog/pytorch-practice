@@ -1,1 +1,0 @@
-python main.py train --dataset /local-scratch/cjc/COCO/train2014/  --style-image ./images/style-images/rain-princess-cropped.jpg --save-model-dir ./weights --epochs 5 --cuda 1 --pretrained-weight ./weights/epoch_2_Fri_Dec_15_19:45:30_2017_100000.0_10000000000.0.model --checkpoint-model-dir ./weights/ckpt
